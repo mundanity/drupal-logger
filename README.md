@@ -1,4 +1,4 @@
-A simple PSR-3 implementation of a logger for Drupal watchdog calls.
+A collection of simple PSR-3 implementations of loggers for Drupal watchdog and Drush log calls.
 
 # Details
 
@@ -14,7 +14,7 @@ The PSR-3 parameter ```$context``` is passed to watchdog as variables, for use a
         }
     }
 
-The watch dog type is set as the function or class method that called the logging code. In the example above, the watchdog type is set as *MyClass::myMethod*.
+The watchdog type is set as the function or class method that called the logging code. In the example above, the watchdog type is set as *MyClass::myMethod*.
 
 ## Controlling log levels
 
