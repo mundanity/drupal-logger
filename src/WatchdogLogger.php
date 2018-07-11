@@ -82,7 +82,17 @@ class WatchdogLogger extends AbstractLogger
             $facility = $trace[$index]['class'] . '::' . $facility;
         }
 
-        watchdog($facility, $message, $context, $severity);
+        // \Throwable is PHP 7+ only.
+        $throwable_class = interface_exists('\Throwable') ? \Throwable::class : \Exception::class;
+
+        if (isset($context['exception']) && $context['exception'] instanceof $throwable_class) {
+            $exception = $context['exception'];
+            unset($context['exception']);
+            watchdog_exception($facility, $exception, $message, $context, $severity);
+        }
+        else {
+            watchdog($facility, $message, $context, $severity);
+        }
     }
 
 }

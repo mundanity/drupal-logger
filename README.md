@@ -25,3 +25,15 @@ Log levels below a specified level can be ignored, which may help reduce noise i
     $logger->debug('Some debugging information');
 
 By default, no events are ignored.
+
+## Exception handling
+
+Full logging of exceptions is supported via the `exception` key in the log context array:
+
+    $exception = new \Exception('Example exception.');
+
+    $logger->debug('An exception was thrown.', [
+        'exception' => $exception,
+    ]);
+
+When used, Drupal's `watchdog_exception()` function will be used instead of `watchdog()`.
