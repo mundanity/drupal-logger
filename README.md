@@ -36,4 +36,4 @@ Full logging of exceptions is supported via the `exception` key in the log conte
         'exception' => $exception,
     ]);
 
-When used, Drupal's `watchdog_exception()` function will be used instead of `watchdog()`.
+When used, the equivalent of Drupal's `watchdog_exception()` function will be used instead of `watchdog()`.
