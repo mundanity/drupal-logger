@@ -82,7 +82,55 @@ class WatchdogLogger extends AbstractLogger
             $facility = $trace[$index]['class'] . '::' . $facility;
         }
 
-        watchdog($facility, $message, $context, $severity);
+        // \Throwable is PHP 7+ only.
+        $throwable_class = interface_exists('\Throwable') ? \Throwable::class : \Exception::class;
+
+        if (isset($context['exception']) && $context['exception'] instanceof $throwable_class) {
+            $exception = $context['exception'];
+            unset($context['exception']);
+            $this->logThrowable($facility, $exception, $message, $context, $severity);
+        } else {
+            watchdog($type, $message, $variables, $severity);
+        }
     }
 
+
+    /**
+     * Logs a throwable (exception or error) using watchdog.
+     *
+     * This is equivalent to Drupal's watchdog_exception() with added support
+     * for PHP 7's throwables.
+     *
+     * @param string $type
+     *   The category to which this message belongs.
+     * @param \Throwable|\Exception $throwable
+     *   The throwable that is going to be logged.
+     * @param string|null $message
+     *   The message to store in the log. If empty, a text that contains all useful
+     *   information about the passed-in exception is used.
+     * @param array $variables
+     *   Array of variables to replace in the message on display. Defaults to the
+     *   return value of _drupal_decode_exception().
+     * @param int $severity
+     *   The severity of the message, as per RFC 3164.
+     *
+     */
+    protected function logThrowable($type, $exception, $message = null, $variables = [], $severity = WATCHDOG_ERROR)
+    {
+        // Use a default value if $message is not set.
+        if (empty($message)) {
+            // The exception message is run through check_plain() by _drupal_decode_exception().
+            $message = '%type: !message in %function (line %line of %file).';
+        }
+
+        // $variables must be an array so that we can add the exception information.
+        if (!is_array($variables)) {
+            $variables = array();
+        }
+
+        require_once DRUPAL_ROOT . '/includes/errors.inc';
+        $variables += _drupal_decode_exception($exception);
+
+        watchdog($type, $message, $variables, $severity);
+    }
 }
