@@ -90,7 +90,7 @@ class WatchdogLogger extends AbstractLogger
             unset($context['exception']);
             $this->logThrowable($facility, $exception, $message, $context, $severity);
         } else {
-            $this->watchdog($facility, $message, $context, $severity);
+            watchdog($type, $message, $variables, $severity);
         }
     }
 
@@ -113,11 +113,9 @@ class WatchdogLogger extends AbstractLogger
      *   return value of _drupal_decode_exception().
      * @param int $severity
      *   The severity of the message, as per RFC 3164.
-     * @param string $link
-     *   A link to associate with the message.
      *
      */
-    protected function logThrowable($type, $exception, $message = null, $variables = [], $severity = WATCHDOG_ERROR, $link = null)
+    protected function logThrowable($type, $exception, $message = null, $variables = [], $severity = WATCHDOG_ERROR)
     {
         // Use a default value if $message is not set.
         if (empty($message)) {
@@ -133,45 +131,6 @@ class WatchdogLogger extends AbstractLogger
         require_once DRUPAL_ROOT . '/includes/errors.inc';
         $variables += _drupal_decode_exception($exception);
 
-        $this->watchdog($type, $message, $variables, $severity, $link);
-    }
-
-
-    /**
-     * Logs a message using Watchdog.
-     *
-     * This is mostly just a wrapper for the watchdog() function.
-     *
-     * @param string $type
-     *   The category to which this message belongs. Can be any string, but the
-     *   general practice is to use the name of the module calling watchdog().
-     * @param string $message
-     *   The message to store in the log. Keep $message translatable
-     *   by not concatenating dynamic values into it! Variables in the
-     *   message should be added by using placeholder strings alongside
-     *   the variables argument to declare the value of the placeholders.
-     *   See t() for documentation on how $message and $variables interact.
-     * @param array $variables
-     *   Array of variables to replace in the message on display or
-     *   NULL if message is already translated or not possible to
-     *   translate.
-     * @param int $severity
-     *   The severity of the message; one of the following values as defined in
-     *   RFC 3164.
-     *   - WATCHDOG_EMERGENCY: Emergency, system is unusable.
-     *   - WATCHDOG_ALERT: Alert, action must be taken immediately.
-     *   - WATCHDOG_CRITICAL: Critical conditions.
-     *   - WATCHDOG_ERROR: Error conditions.
-     *   - WATCHDOG_WARNING: Warning conditions.
-     *   - WATCHDOG_NOTICE: (default) Normal but significant conditions.
-     *   - WATCHDOG_INFO: Informational messages.
-     *   - WATCHDOG_DEBUG: Debug-level messages.
-     * @param string $link
-     *   A link to associate with the message.
-     *
-     */
-    protected function watchdog($type, $message, $variables = [], $severity = WATCHDOG_NOTICE, $link = null)
-    {
-        watchdog($type, $message, $variables, $severity, $link);
+        watchdog($type, $message, $variables, $severity);
     }
 }
